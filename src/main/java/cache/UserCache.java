@@ -8,7 +8,7 @@ import utils.Config;
 
 import java.util.ArrayList;
 
-//TODO: Build this cache and use it. FIXET
+//TODO: Build this cache and use it. FIXED
 public class UserCache {
     // List of products
     private ArrayList<User> users;

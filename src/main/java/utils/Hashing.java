@@ -7,7 +7,10 @@ import org.bouncycastle.util.encoders.Hex;
 
 public final class Hashing {
 
-  // TODO: You should add a salt and make this secure HAR VALGT DEN ANDEN METODE
+
+  // TODO: You should add a salt and make this secure FIXED
+
+  private String salt = Config.getSALT();
   public static String md5(String rawString) {
     try {
 
@@ -36,15 +39,12 @@ public final class Hashing {
 
     return null;
   }
+}
 
-  public static String shaSalt (String str) {
-    String salt = "tekst";
-    String saltedPAssword = str + salt;
 
-    return sha(saltedPAssword);
-  }
 
-  // TODO: You should add a salt and make this secure FIXET
+
+  /* TODO: You should add a salt and make this secure
   public static String sha(String rawString) {
     try {
       // We load the hashing algoritm we wish to use.
@@ -65,4 +65,11 @@ public final class Hashing {
 
     return rawString;
   }
+
+
+  public String HashSalt (String whateverigen){
+    String salt = whateverigen + this.salt;
+    return md5(salt);
+  }
 }
+

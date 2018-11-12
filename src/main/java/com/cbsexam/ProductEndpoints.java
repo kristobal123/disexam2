@@ -27,7 +27,7 @@ public class ProductEndpoints {
     // Call our controller-layer in order to get the order from the DB
     Product product = ProductController.getProduct(idProduct);
 
-    // TODO: Add Encryption to JSON FIXET
+    // TODO: Add Encryption to JSON FIXED
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(product);
 
@@ -46,7 +46,7 @@ public class ProductEndpoints {
     // Call our controller-layer in order to get the order from the DB
     ArrayList<Product> products = ProductController.getProducts();
 
-    // TODO: Add Encryption to JSON FIXET
+    // TODO: Add Encryption to JSON FIXED
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(products);
 
