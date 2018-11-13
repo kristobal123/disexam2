@@ -117,6 +117,7 @@ public class UserController {
             + "', '"
             + user.getLastname()
             + "', '"
+                //hasher password
             + hashwhatever.HashSalt(user.getPassword())
             + "', '"
             + user.getEmail()
