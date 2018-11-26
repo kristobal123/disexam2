@@ -3,6 +3,8 @@ package controllers;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import com.sun.javafx.scene.traversal.Algorithm;
 import model.User;
 import utils.Hashing;
 import utils.Log;
@@ -135,5 +137,20 @@ public class UserController {
 
     // Return user
     return user;
+  }
+
+
+  public static void deleteUser(int id) {
+
+    //checking for Database connection
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    // Prepared Statement
+    String sql = "DELETE FROM user WHERE id=" + id;
+
+    dbCon.deleteUser(sql);
+
   }
 }

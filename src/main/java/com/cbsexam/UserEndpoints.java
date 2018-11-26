@@ -3,11 +3,7 @@ package com.cbsexam;
 import com.google.gson.Gson;
 import controllers.UserController;
 import java.util.ArrayList;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import model.User;
@@ -32,15 +28,17 @@ public class UserEndpoints {
     // Convert the user object to json in order to return the object
     String json = new Gson().toJson(user);
 
-    json= Encryption.encryptDecryptXOR(json);
+    json = Encryption.encryptDecryptXOR(json);
 
 
-            // Return the user with the status code 200
+    // Return the user with the status code 200
     // TODO: What should happen if something breaks down?
     return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
   }
 
-  /** @return Responses */
+  /**
+   * @return Responses
+   */
   @GET
   @Path("/")
   public Response getUsers() {
@@ -55,10 +53,10 @@ public class UserEndpoints {
     // Transfer users to json in order to return it to the user
     String json = new Gson().toJson(users);
 
-    json= Encryption.encryptDecryptXOR(json);
+    json = Encryption.encryptDecryptXOR(json);
 
 
-            // Return the users with the status code 200
+    // Return the users with the status code 200
     return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
   }
 
@@ -86,20 +84,25 @@ public class UserEndpoints {
   }
 
   // TODO: Make the system able to login users and assign them a token to use throughout the system.
-  @POST
-  @Path("/login")
-  @Consumes(MediaType.APPLICATION_JSON)
-  public Response loginUser(String x) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
-  }
 
-  // TODO: Make the system able to delete users
-  public Response deleteUser(String x) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+
+  // TODO: Make the system able to delete users FIXED
+  @DELETE
+  @Path("/delete/{user_id}")
+  public Response deleteUser(@PathParam("user_id") int id) {
+
+    UserController.deleteUser(id);
+
+    if (id != 0) {
+      return Response.status(200).entity("User" + id + "removed").build();
+    } else {
+
+
+      // Return a response with status 200 and JSON as type
+      return Response.status(400).entity("Endpoint not implemented yet").build();
+    }
   }
 
   // TODO: Make the system able to update users
