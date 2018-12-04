@@ -3,6 +3,7 @@ package com.cbsexam;
 import com.google.gson.Gson;
 import controllers.UserController;
 import java.util.ArrayList;
+import javax.print.attribute.standard.Media;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -83,9 +84,22 @@ public class UserEndpoints {
     }
   }
 
-  // TODO: Make the system able to login users and assign them a token to use throughout the system.
+  // TODO: Make the system able to login users and assign them a token to use throughout the system. (FIXED)
+@POST
+@Path("/login")
+@Consumes(MediaType.APPLICATION_JSON)
+public Response loginUser(String x) {
+    User user = new Gson().fromJson(x, User.class);
 
+    String token = UserController.loginUser(user);
 
+    if (token !="") {
+      //Return a response with status 200 and JSON as type
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Your token: " + token).build();
+    } else {
+      return Response.status(400).entity("Endpoint not implemented yet").build();
+    }
+}
 
 
   // TODO: Make the system able to delete users FIXED

@@ -1,11 +1,14 @@
 package controllers;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.mysql.cj.protocol.Resultset;
 import com.sun.javafx.scene.traversal.Algorithm;
 import model.User;
+import org.glassfish.jersey.client.JerseyWebTarget;
 import utils.Hashing;
 import utils.Log;
 
@@ -152,5 +155,56 @@ public class UserController {
 
     dbCon.deleteUser(sql);
 
+  }
+
+  public static String loginUser(User user) {
+
+    Hashing hashing = new Hashing();
+
+    if (dbCon == null)
+      dbCon = new DatabaseController();
+
+    ResultSet resultSet;
+    User newUser;
+    String token = null;
+
+    try {
+      PreparedStatement loginUser = dbCon.getConnection().prepareStatement("SELECT * FROM user WHERE email = ? AND password = ?");
+      loginUser.setString(1, user.getEmail());
+      loginUser.setString(2, hashing.HashSalt(user.getPassword()));
+
+      resultSet = loginUser.executeQuery();
+
+      if (resultSet.next()) {
+        newUser = new User(
+                resultSet.getInt("id"),
+                resultSet.getString("first_name"),
+                resultSet.getString("last_name"),
+                resultSet.getString("password"),
+                resultSet.getString("email"));
+
+        if (newUser != null) {
+          try {
+            Algorithm algorithm = Algorithm.HMAC256("Hemmelig");
+            token = JWT.create()
+                    .withClaim
+                    .withIssuer("auth0")
+                    .sign(algorithm);
+          } catch (JWTCreattionException ex) {
+
+          }finally {
+            return token;
+          }
+          }
+        } else {
+        System.out.println("Could not found the user");
+      }
+
+
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+return"";
   }
 }
