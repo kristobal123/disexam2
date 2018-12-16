@@ -5,12 +5,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.mysql.cj.protocol.Resultset;
-import com.sun.javafx.scene.traversal.Algorithm;
 import model.User;
 import org.glassfish.jersey.client.JerseyWebTarget;
 import utils.Hashing;
 import utils.Log;
+
+import javax.xml.transform.Result;
 
 public class UserController {
 
@@ -38,12 +42,12 @@ public class UserController {
       // Get first object, since we only have one
       if (rs.next()) {
         user =
-            new User(
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("password"),
-                rs.getString("email"));
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
 
         // return the create object
         return user;
@@ -81,12 +85,12 @@ public class UserController {
       // Loop through DB Data
       while (rs.next()) {
         User user =
-            new User(
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("password"),
-                rs.getString("email"));
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
 
         // Add element to list
         users.add(user);
@@ -117,23 +121,23 @@ public class UserController {
     // Insert the user in the DB
     // TODO: Hash the user password before saving it. FIXED
     int userID = dbCon.insert(
-        "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
-            + user.getFirstname()
-            + "', '"
-            + user.getLastname()
-            + "', '"
-                //hasher password
-            + hashwhatever.HashSalt(user.getPassword())
-            + "', '"
-            + user.getEmail()
-            + "', "
-            + user.getCreatedTime()
-            + ")");
+            "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
+                    + user.getFirstname()
+                    + "', '"
+                    + user.getLastname()
+                    + "', '"
+                    //hasher password
+                    + hashwhatever.HashSalt(user.getPassword())
+                    + "', '"
+                    + user.getEmail()
+                    + "', "
+                    + user.getCreatedTime()
+                    + ")");
 
     if (userID != 0) {
       //Update the userid of the user before returning
       user.setId(userID);
-    } else{
+    } else {
       // Return null if user has not been inserted into database
       return null;
     }
@@ -159,52 +163,57 @@ public class UserController {
 
   public static String loginUser(User user) {
 
-    Hashing hashing = new Hashing();
-
-    if (dbCon == null)
+    //Checking Database Connectivity
+    if (dbCon == null) {
       dbCon = new DatabaseController();
+    }
 
-    ResultSet resultSet;
-    User newUser;
+    String sql = "SELCET * FROM user where email= " + user.getEmail() + " AND password= " + user.getPassword() + "";
+
+    dbCon.loginUser(sql);
+
+    //Here we do the query
+    ResultSet resultSet = dbCon.query(sql);
+    User userlogin;
     String token = null;
 
     try {
-      PreparedStatement loginUser = dbCon.getConnection().prepareStatement("SELECT * FROM user WHERE email = ? AND password = ?");
-      loginUser.setString(1, user.getEmail());
-      loginUser.setString(2, hashing.HashSalt(user.getPassword()));
-
-      resultSet = loginUser.executeQuery();
-
+      //here we get the first object, because we only have one
       if (resultSet.next()) {
-        newUser = new User(
-                resultSet.getInt("id"),
+        userlogin = new User(
+                resultSet.getInt("Id"),
                 resultSet.getString("first_name"),
                 resultSet.getString("last_name"),
                 resultSet.getString("password"),
                 resultSet.getString("email"));
 
-        if (newUser != null) {
+        if (userlogin != null) {
           try {
-            Algorithm algorithm = Algorithm.HMAC256("Hemmelig");
+
+            Algorithm algorithm = Algorithm.HMAC256("hemmelig");
             token = JWT.create()
-                    .withClaim
+                    .withClaim("userid", userlogin.getId())
                     .withIssuer("auth0")
                     .sign(algorithm);
-          } catch (JWTCreattionException ex) {
-
-          }finally {
+          } catch (JWTCreationException exception) {
+            //Invalid signing configuration / could not convert claims
+            System.out.println(exception.getMessage());
+          } finally {
             return token;
           }
-          }
-        } else {
-        System.out.println("Could not found the user");
+        }
+      } else {
+        System.out.println("No user found");
       }
-
-
-
-    } catch (SQLException e) {
-      e.printStackTrace();
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
     }
-return"";
+//Return null
+
+    return "";
+
   }
 }
+
+
+

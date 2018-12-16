@@ -88,36 +88,21 @@ public class UserEndpoints {
 @POST
 @Path("/login")
 @Consumes(MediaType.APPLICATION_JSON)
-public Response loginUser(String x) {
-    User user = new Gson().fromJson(x, User.class);
+public Response loginUser(String body) {
+    //Read the json from body and transfer it to a user class
+  User user = new Gson().fromJson(body, User.class);
 
-    String token = UserController.loginUser(user);
+  //Get the user back with the added ID and return it to the user
+  String token = UserController.loginUser(user);
 
-    if (token !="") {
-      //Return a response with status 200 and JSON as type
-      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Your token: " + token).build();
-    } else {
-      return Response.status(400).entity("Endpoint not implemented yet").build();
-    }
-}
-
-
-  // TODO: Make the system able to delete users FIXED
-  @DELETE
-  @Path("/delete/{user_id}")
-  public Response deleteUser(@PathParam("user_id") int id) {
-
-    UserController.deleteUser(id);
-
-    if (id != 0) {
-      return Response.status(200).entity("User" + id + "removed").build();
-    } else {
-
-
-      // Return a response with status 200 and JSON as type
-      return Response.status(400).entity("Endpoint not implemented yet").build();
-    }
+  //Return the data to the user
+  if (token != "") {
+    //Return a response with the status 200 and JSON as type
+    return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(token).build();
+  } else {
+    return Response.status(400).entity("Could not create user").build();
   }
+}
 
   // TODO: Make the system able to update users
   public Response updateUser(String x) {
