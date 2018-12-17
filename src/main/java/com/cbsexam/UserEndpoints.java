@@ -25,7 +25,7 @@ public class UserEndpoints {
     // Use the ID to get the user from the controller.
     User user = UserController.getUser(idUser);
 
-    // TODO: Add Encryption to JSON FIXED
+    // TODO: Add Encryption to JSON --- FIXED
     // Convert the user object to json in order to return the object
     String json = new Gson().toJson(user);
 
@@ -50,7 +50,7 @@ public class UserEndpoints {
     // Get a list of users
     ArrayList<User> users = UserController.getUsers();
 
-    // TODO: Add Encryption to JSON FIXED
+    // TODO: Add Encryption to JSON --- FIXED
     // Transfer users to json in order to return it to the user
     String json = new Gson().toJson(users);
 
@@ -84,7 +84,7 @@ public class UserEndpoints {
     }
   }
 
-  // TODO: Make the system able to login users and assign them a token to use throughout the system. (FIXED)
+  // TODO: Make the system able to login users and assign them a token to use throughout the system. --- FIXED
 @POST
 @Path("/login")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -104,10 +104,20 @@ public Response loginUser(String body) {
   }
 }
 
-  // TODO: Make the system able to update users
-  public Response updateUser(String x) {
+  // TODO: Make the system able to update users --- FIXED
+@PUT
+@Path("/{userId}/{token}")
+@Consumes(MediaType.APPLICATION_JSON)
+public Response updateUser(@PathParam("token") String token, String body){
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
-  }
+      User user = new Gson().fromJson(body, User.class);
+
+      Boolean updated = UserController.updateUser(user, token);
+
+      if (updated) {
+        return Response.status(200).type(MediaType.APPLICATION_JSON).entity("User is updated").build();
+      } else
+        //Return a response with status 200 and JSON as type
+        return Response.status(400).entity("Endpoint not implemented yet").build();
+    }
 }

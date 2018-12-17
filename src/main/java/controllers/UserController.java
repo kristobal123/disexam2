@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mysql.cj.protocol.Resultset;
 import model.User;
 import org.glassfish.jersey.client.JerseyWebTarget;
@@ -119,7 +120,7 @@ public class UserController {
     }
 
     // Insert the user in the DB
-    // TODO: Hash the user password before saving it. FIXED
+    // TODO: Hash the user password before saving it. --- FIXED
     int userID = dbCon.insert(
             "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
                     + user.getFirstname()
@@ -213,7 +214,39 @@ public class UserController {
     return "";
 
   }
+
+
+  public static Boolean updateUser(User user, String token) {
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+    try {
+      DecodedJWT jwt = JWT.decode(token);
+      int id = jwt.getClaim("userId").asInt();
+
+      try {
+        PreparedStatement updateUser = dbCon.getConnection().prepareStatement("UPDATE USER SET " + "first_name = ?, last_name = ?,password = ?, email = ? WHERE id = ?");
+        updateUser.setString(1, user.getFirstname());
+        updateUser.setString(2, user.getLastname());
+        updateUser.setString(3, user.getPassword());
+        updateUser.setString(4, user.getEmail());
+        updateUser.setInt(5, id);
+        int rowsaffected = updateUser.executeUpdate();
+
+        if (rowsaffected == 1) {
+          return true;
+
+        }
+
+      } catch (SQLException sql) {
+        sql.printStackTrace();
+
+      }
+
+    } catch (JWTCreationException exception) {
+      exception.printStackTrace();
+    }
+    return false;
+  }
 }
-
-
 

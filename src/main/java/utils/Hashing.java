@@ -1,14 +1,16 @@
 package utils;
 
+import org.apache.commons.codec.binary.Hex;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import org.bouncycastle.util.encoders.Hex;
+
 
 public final class Hashing {
 
 
-  // TODO: You should add a salt and make this secure FIXED
+  // TODO: You should add a salt and make this secure --- FIXED
 
   private String salt = Config.getSALT();
   public static String md5(String rawString) {
@@ -42,19 +44,19 @@ public final class Hashing {
 
 
 
+/*
 
-
-  //TODO: You should add a salt and make this secure
+  //TODO: You should add a salt and make this secure --- (FIXED)
   public static String sha(String rawString) {
     try {
-    //We load the hashing algoritm we wish to use.
+    //We load the hashing algorithm we wish to use.
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
       // We convert to byte array
       byte[] hash = digest.digest(rawString.getBytes(StandardCharsets.UTF_8));
 
       // We create the hashed string
-      String sha256hex = new String(Hex.encode(hash));
+      String sha256hex = new String();
 
       // And return the string
       return sha256hex;
@@ -65,7 +67,7 @@ public final class Hashing {
 
     return rawString;
   }
-
+*/
 
   public String HashSalt (String whateverigen){
     String salt = whateverigen + this.salt;
